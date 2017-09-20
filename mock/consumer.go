@@ -2,7 +2,7 @@ package mock
 
 func New() *Consumer {
 	return &Consumer{
-		srcChan: make(chan []byte),
+		SrcChan: make(chan []byte),
 		msgs:    make(chan []byte),
 		quit:    make(chan bool),
 		open:    false,
@@ -10,18 +10,18 @@ func New() *Consumer {
 }
 
 type Consumer struct {
-	srcChan chan []byte
+	SrcChan chan []byte
 	msgs    chan []byte
 	quit    chan bool
 	open    bool
 }
 
 func (c *Consumer) Produce(msg []byte) {
-	c.srcChan <- msg
+	c.SrcChan <- msg
 }
 
 func (c *Consumer) Consume() ([]byte, error) {
-	msg := <-c.srcChan
+	msg := <-c.SrcChan
 	return msg, nil
 }
 
@@ -31,7 +31,7 @@ func (c *Consumer) Channel() chan []byte {
 		done <- true
 		for {
 			select {
-			case msg := <-c.srcChan:
+			case msg := <-c.SrcChan:
 				c.msgs <- msg
 			case <- c.quit:
 				close(c.msgs)

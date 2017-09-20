@@ -87,4 +87,3 @@ func TestIsUnBuffered(t *testing.T) {
 
 	assert.True(t, diff > expectDelay)
 }
-
