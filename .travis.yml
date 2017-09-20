@@ -5,10 +5,6 @@ branches:
   only:
     - "master"
 
-env:
-  global:
-    - secure: "Wgq4zuakQnbzi70DUSCa2XfpW20aCq/8N3bg+bjLvaXjQGN2XWS1+qbCw5gUhJ6FAla4vQRzGlA62WCGHASQvfgtmZs17zRIhY7mst+JLCtUpA5R//YURsfOmNrzKnTrHJ2USc2DHpp4Mz2MwU0Etuw4v4H9ofk1E0oxyJi95ibEH+4i9v8WjcvE4reHT3bI0xpssidqoE1eI+/EPJ3WR/M5Yhw5orEq5i6GviajdoHvAT+Zx5GFweHwbddrjhpFabMY8QAoffZxcKDTYFtVRRm5VD5v/J+CiacDPl2Z9xzBVlQtwvrDlg0JBRYqMdbW4At8mlCW9QkqBGf0eZ+vIdqG1/wG3N+vT1KbRjDFRpOK1TTCJ3kIlhhWte2V5lo6dmi+u6Fdk9bHTpN6ZffTZa+KX8FdIK9s5odgAGmkSG5xxy2lVp0+jBDvJ4szJAmZAQ0GYqKkuNHkOa9uknKKC9jJhWeQc9B/mv3YtC2Wh32n81wXvJihFipt2qEKzHaKbcKl3YBNp/ho5hlp5M6Kefj2cNYJdApyWEoX3uVzUoE/3HeQEg4veeG/XCVu/9KTwjzjdUpAVnpIYhrDbIStd7xsM15RemV/Moe9v9OW7QFGj0VaEH/t11rxcp3u/zxnP58dXTBjTDZO10hdXgpAsI9trid8N2xkC7lRJRl11MQ="
-
 services:
   - redis
 
@@ -36,4 +32,4 @@ install:
 after_script:
  - go get github.com/mattn/goveralls
  - make coverage-concat
- - $HOME/gopath/bin/goveralls -coverprofile=coverage/full -service=travis-ci -repotoken $COVERALLS_TOKEN
+ - $HOME/gopath/bin/goveralls -coverprofile=coverage/full -service=travis-ci
