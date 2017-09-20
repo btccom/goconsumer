@@ -1,13 +1,13 @@
 package redis
 
 import (
-	"github.com/go-redis/redis"
-	"time"
 	"fmt"
+	"github.com/go-redis/redis"
 	"math/rand"
+	"time"
 )
 
-func makeProducer(opt *redis.Options, queueName string) (func (msg []byte), func ()) {
+func makeProducer(opt *redis.Options, queueName string) (func(msg []byte), func()) {
 	client := redis.NewClient(opt)
 	producerFunc := func(msg []byte) {
 		client.RPush(queueName, msg)

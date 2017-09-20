@@ -33,7 +33,7 @@ func (c *Consumer) Channel() chan []byte {
 			select {
 			case msg := <-c.SrcChan:
 				c.msgs <- msg
-			case <- c.quit:
+			case <-c.quit:
 				close(c.msgs)
 			}
 		}

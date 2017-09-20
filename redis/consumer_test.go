@@ -1,10 +1,10 @@
 package redis
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"time"
 	"github.com/go-redis/redis"
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 func TestNew(t *testing.T) {

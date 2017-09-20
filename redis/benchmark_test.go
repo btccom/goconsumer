@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func BenchmarkConsumer(b *testing.B) {
@@ -11,7 +11,7 @@ func BenchmarkConsumer(b *testing.B) {
 	producer, closer := makeProducer(opts, queueName)
 	defer closer()
 
-	go func(producer func ([]byte)) {
+	go func(producer func([]byte)) {
 		toSend := []byte{0x42}
 		for n := 0; n < b.N; n++ {
 			producer(toSend)
@@ -24,13 +24,13 @@ func BenchmarkConsumer(b *testing.B) {
 	go func(doneChan chan int) {
 		result := 0
 		for n := 0; n < b.N; n++ {
-			<- ch
+			<-ch
 			result += 1
 		}
 
 		doneChan <- result
 	}(doneChan)
 
-	result := <- doneChan
+	result := <-doneChan
 	fmt.Printf("Benchmark covered %d receives\n", result)
 }
