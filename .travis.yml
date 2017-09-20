@@ -35,4 +35,5 @@ install:
 
 after_script:
  - go get github.com/mattn/goveralls
+ - make coverage-concat
  - $HOME/gopath/bin/goveralls -coverprofile=coverage/full -service=travis-ci -repotoken $COVERALLS_TOKEN
