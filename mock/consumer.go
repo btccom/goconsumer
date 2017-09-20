@@ -20,11 +20,6 @@ func (c *Consumer) Produce(msg []byte) {
 	c.SrcChan <- msg
 }
 
-func (c *Consumer) Consume() ([]byte, error) {
-	msg := <-c.SrcChan
-	return msg, nil
-}
-
 func (c *Consumer) Channel() chan []byte {
 	done := make(chan bool)
 	go func() {
