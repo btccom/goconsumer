@@ -27,4 +27,4 @@ addons:
 
 install:
  - glide update
- - make test test-race coverage minimum-coverage
+ - make test test-race coverage minimum-coverage benchmarks
