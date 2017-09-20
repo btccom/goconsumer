@@ -5,7 +5,21 @@ import (
 	"github.com/go-redis/redis"
 	"math/rand"
 	"time"
+	"flag"
 )
+
+var tstRedisHost string
+var tstRedisPass string
+var tstRedisPort int
+var tstRedisDb int
+
+func init() {
+	flag.StringVar(&tstRedisHost, "redis.host", "127.0.0.1", "the redis hostname/ip")
+	flag.IntVar(&tstRedisPort, "redis.port", 6379, "redis port")
+	flag.IntVar(&tstRedisDb, "redis.db", 5, "redis db")
+	flag.StringVar(&tstRedisPass, "redis.pass", "", "redis password")
+	flag.Parse()
+}
 
 func makeProducer(opt *redis.Options, queueName string) (func(msg []byte), func()) {
 	client := redis.NewClient(opt)
@@ -30,11 +44,11 @@ func randStringRunes(n int) string {
 	return string(b)
 }
 
-func makeTestOpts(host string, port int, pass string) (*redis.Options, string) {
+func makeTestOpts() (*redis.Options, string) {
 	opt := &redis.Options{
-		Addr:       fmt.Sprintf("%s:%d", host, port),
-		Password:   pass,
-		DB:         5,
+		Addr:       fmt.Sprintf("%s:%d", tstRedisHost, tstRedisPort),
+		Password:   tstRedisPass,
+		DB:         tstRedisDb,
 		MaxRetries: 2,
 		PoolSize:   20,
 	}

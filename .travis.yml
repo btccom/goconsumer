@@ -28,6 +28,4 @@ addons:
 
 install:
  - glide update
- - make test
- - make test-race
- - make coverage
+ - make test test-race coverage minimum-coverage

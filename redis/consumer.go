@@ -23,7 +23,7 @@ type Consumer struct {
 	quit     chan bool
 }
 
-func (c *Consumer) Consume() ([]byte, error) {
+func (c *Consumer) consume() ([]byte, error) {
 	timeout := 1 * time.Second
 
 	msg := c.redis.BRPop(timeout, c.redisKey)
@@ -55,7 +55,7 @@ func (c *Consumer) Channel() chan []byte {
 				close(c.msgs)
 				return
 			default:
-				msg, err := c.Consume()
+				msg, err := c.consume()
 				if err != nil {
 					close(c.msgs)
 					return

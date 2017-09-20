@@ -8,7 +8,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	opts, queueName := makeTestOpts("127.0.0.1", 6979, "")
+	opts, queueName := makeTestOpts()
 
 	consumer := New(opts, queueName)
 	assert.NotNil(t, consumer)
@@ -18,17 +18,42 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, queueName, consumer.redisKey)
 }
 
-func TestMockConsumer(t *testing.T) {
+func TestConsumeInternallyTimesOut(t *testing.T) {
+	opts, queueName := makeTestOpts()
+	consumer := New(opts, queueName)
+
+	waitSeconds := 3
+
+	start := time.Now()
+	doneCount := make(chan int)
+
+	go func(doneCount chan int, waitSeconds int) {
+		for i := 0; i < waitSeconds; i++ {
+			val, err := consumer.consume()
+			assert.NoError(t, err)
+			assert.NotNil(t, val)
+			assert.True(t, len(val) == 0)
+		}
+		doneCount <- waitSeconds
+	}(doneCount, waitSeconds)
+
+	done := <-doneCount
+
+	assert.Equal(t, waitSeconds, done)
+	assert.True(t, time.Since(start) > time.Second*time.Duration(waitSeconds))
+}
+
+func TestRedisConsumer(t *testing.T) {
 	input := make([][]byte, 3)
 	input[0] = []byte{0x41}
 	input[1] = []byte{0x41, 0x42}
 	input[2] = []byte{0x41, 0x42, 0x43}
 
-	opt, queueName := makeTestOpts("127.0.0.1", 6979, "")
-	producer, closer := makeProducer(opt, queueName)
+	opts, queueName := makeTestOpts()
+	producer, closer := makeProducer(opts, queueName)
 	defer closer()
 
-	consumer := New(opt, queueName)
+	consumer := New(opts, queueName)
 	go func(producer func([]byte), list ...[]byte) {
 		l := len(list)
 		for i := 0; i < l; i++ {
@@ -42,20 +67,19 @@ func TestMockConsumer(t *testing.T) {
 		received = append(received, msg)
 		checkAgainst := input[len(received)-1]
 		assert.Equal(t, checkAgainst, msg)
+		if len(received) == len(input) {
+			consumer.Close()
+		}
 	}
-
-	// Channel is closed
-	v := <-ch
-	assert.Nil(t, v)
 }
 
 func TestIsUnBuffered(t *testing.T) {
 
-	opt, queueName := makeTestOpts("127.0.0.1", 6979, "")
-	producer, closer := makeProducer(opt, queueName)
+	opts, queueName := makeTestOpts()
+	producer, closer := makeProducer(opts, queueName)
 	defer closer()
 
-	consumer := New(opt, queueName)
+	consumer := New(opts, queueName)
 
 	start := time.Now()
 	done := make(chan bool)
@@ -72,7 +96,7 @@ func TestIsUnBuffered(t *testing.T) {
 	go func(consumer *Consumer, doneChan chan bool, delay time.Duration) {
 		for i := 0; i < numValues; i++ {
 			time.Sleep(delay)
-			consumer.Consume()
+			consumer.consume()
 		}
 		done <- true
 	}(consumer, done, delay)

@@ -59,3 +59,5 @@ coverage: coverage-concat
 coverage-html: coverage-concat
 	go tool cover -html=coverage/full $(COVERAGEARGS)
 
+minimum-coverage: coverage-concat
+	./tools/minimum-coverage.sh 90

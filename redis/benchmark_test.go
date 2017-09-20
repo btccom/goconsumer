@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkConsumer(b *testing.B) {
-	opts, queueName := makeTestOpts("127.0.0.1", 6979, "")
+	opts, queueName := makeTestOpts()
 	consumer := New(opts, queueName)
 	producer, closer := makeProducer(opts, queueName)
 	defer closer()
