@@ -59,7 +59,7 @@ func TestIsUnBuffered(t *testing.T) {
 	go func(consumer *Consumer, delay time.Duration) {
 		for i := 0; i < numValues; i++ {
 			time.Sleep(delay)
-			consumer.Consume()
+			<-consumer.SrcChan
 		}
 	}(consumer, delay)
 
