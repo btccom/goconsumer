@@ -23,7 +23,7 @@ func init() {
 func makeProducer(opt *redis.Options, queueName string) (func(msg []byte), func()) {
 	client := redis.NewClient(opt)
 	producerFunc := func(msg []byte) {
-		client.RPush(queueName, msg)
+		client.LPush(queueName, msg)
 	}
 	closeFunc := func() {
 		client.Close()
