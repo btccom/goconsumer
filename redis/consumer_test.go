@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+	"fmt"
 )
 
 func TestNew(t *testing.T) {
@@ -16,6 +17,46 @@ func TestNew(t *testing.T) {
 	assert.NotNil(t, consumer.redis)
 	assert.IsType(t, redis.Client{}, *consumer.redis)
 	assert.Equal(t, queueName, consumer.redisKey)
+}
+
+func TestBrPopTimeoutBehavior(t *testing.T) {
+	opts, queueName := makeTestOpts()
+
+	consumer := New(opts, queueName)
+
+	errTimeout := fmt.Errorf("redis: nil")
+	errIoTimeout := fmt.Errorf("prefix....i/o timeout")
+	errDifferent := fmt.Errorf("the sky is falling")
+
+	fixtures := []struct{
+		input error
+		isOk bool
+	}{
+		{errTimeout, true},
+		{errIoTimeout, true},
+		{errDifferent, false},
+	}
+
+	for i := 0; i < len(fixtures); i++ {
+		fixture := fixtures[i]
+		var desc string
+		if fixture.isOk {
+			desc = fmt.Sprintf("No error thrown for error `%s`", fixture.input.Error())
+		} else {
+			desc = fmt.Sprintf("Error thrown for error `%s`", fixture.input.Error())
+		}
+		t.Run(desc, func (t *testing.T) {
+			res, err := consumer.handleError(fixture.input)
+			if fixture.isOk {
+				assert.NoError(t, err)
+				assert.NotNil(t, res)
+				assert.True(t, len(res) == 0)
+			} else {
+				assert.Error(t, err)
+				assert.EqualError(t, err, fmt.Sprintf("brpop failed: %s", fixture.input.Error()))
+			}
+		})
+	}
 }
 
 func TestConsumeInternallyTimesOut(t *testing.T) {

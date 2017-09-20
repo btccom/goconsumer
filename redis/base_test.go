@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/go-redis/redis"
 	"math/rand"
-	"time"
 	"flag"
 )
 
@@ -25,7 +24,6 @@ func makeProducer(opt *redis.Options, queueName string) (func(msg []byte), func(
 	client := redis.NewClient(opt)
 	producerFunc := func(msg []byte) {
 		client.RPush(queueName, msg)
-		time.Sleep(time.Millisecond * 200)
 	}
 	closeFunc := func() {
 		client.Close()

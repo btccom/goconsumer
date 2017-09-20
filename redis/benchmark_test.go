@@ -27,7 +27,6 @@ func BenchmarkConsumer(b *testing.B) {
 			<-ch
 			result += 1
 		}
-
 		doneChan <- result
 	}(doneChan)
 

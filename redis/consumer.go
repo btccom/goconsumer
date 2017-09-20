@@ -28,21 +28,32 @@ func (c *Consumer) consume() ([]byte, error) {
 
 	msg := c.redis.BRPop(timeout, c.redisKey)
 	res, err := msg.Result()
+
+	var ret string
 	if err != nil {
-		// `redis: nil` indicates we just reached the set blocking timeout
-		if err.Error() == "redis: nil" {
-			return []byte{}, nil
-
-			// i/o timeout err indicates we just reached the set blocking timeout
-		} else if strings.HasSuffix(err.Error(), "i/o timeout") {
-			return []byte{}, nil
-
-		} else {
-			return nil, errors.Wrapf(err, "brpop failed")
+		ret, err = c.handleError(err)
+		if err != nil {
+			return nil, err
 		}
+	} else {
+		ret = res[1]
 	}
 
-	return []byte(res[1]), nil
+	return []byte(ret), nil
+}
+
+func (c *Consumer) handleError(err error) (string, error) {
+	// `redis: nil` indicates we just reached the set blocking timeout
+	if err.Error() == "redis: nil" {
+		return "", nil
+
+		// i/o timeout err indicates we just reached the set blocking timeout
+	} else if strings.HasSuffix(err.Error(), "i/o timeout") {
+		return "", nil
+
+	} else {
+		return "", errors.Wrapf(err, "brpop failed")
+	}
 }
 
 func (c *Consumer) Channel() chan []byte {

@@ -61,3 +61,9 @@ coverage-html: coverage-concat
 
 minimum-coverage: coverage-concat
 	./tools/minimum-coverage.sh 90
+
+benchmark-mock:
+	cd mock && go test -bench=.
+
+benchmark-redis:
+	cd redis && go test -bench=.
